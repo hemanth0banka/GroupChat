@@ -7,6 +7,7 @@ const cors = require('cors')
 const login = require('./route/login.js')
 const signup = require('./route/signup.js')
 const send = require('./route/send.js')
+const data = require('./route/data.js')
 const port = process.env.PORT
 require('./model/model.js')
 console.log('server is running...')
@@ -22,6 +23,7 @@ app.get('/home',(req,res)=>{
 app.use('/login',login)
 app.use('/signup',signup)
 app.use('/send',send)
+app.use('/data',data)
 app.use((req,res)=>{
     res.status(404).send('Page Not Found ...')
 })
