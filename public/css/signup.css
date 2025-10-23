@@ -43,5 +43,6 @@ form > button {
     align-self: center;
 }
 a {
-    color : gray
+    color : gray;
+    text-decoration: underline 1px;
 }
