@@ -22,8 +22,13 @@ const postService = async (username,password)=>{
             throw 404
         }
         const r = await bcrypt.compare(password,user.password)
-        const token = jwt.sign({userId : user.userId,username : user.username},process.env.secretkey)
-        return token
+        if(r)
+        {
+            const token = jwt.sign({userId : user.userId,username : user.username},process.env.secretkey)
+            return token
+        }
+        throw 401
+        
     }
     catch(e)
     {

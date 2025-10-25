@@ -1,5 +1,5 @@
 let userId ;
-let arr = [];
+
 function ele(x)
 {
     const p = document.createElement('p')
@@ -21,44 +21,12 @@ function ele(x)
     const container = document.querySelector('#data');
     container.scrollTop = container.scrollHeight;
 }
+
 function add(a)
 {
     for(let x of a)
     {
         ele(x)
-    }
-}
-async function load()
-{
-    try
-    {
-        let r = await axios.get('/data',{
-            headers : {
-                Authorization : `Bearer ${localStorage.getItem('token')}`
-            }
-        })
-        console.log(r.data[0])
-        if(arr.length == r.data[0].length)
-        {
-            return 0
-        }
-        if(arr.length ++ == r.data[0].length)
-        {
-            ele(r.data[0][r.data[0].length -1])
-            arr.push(r.data[0].length)
-        }
-        else
-        {
-            document.querySelector('#data').innerHTML = ''
-            arr = r.data[0]
-            add(r.data[0])
-            return 0
-        }
-        add(r.data[0])
-    }
-    catch(e)
-    {
-        console.log(e)
     }
 }
 
@@ -70,7 +38,6 @@ window.addEventListener('load',async (event)=>{
                 Authorization : `Bearer ${localStorage.getItem('token')}`
             }
         })
-        arr = r.data[0]
         userId = r.data[1]
         add(r.data[0])
     }
@@ -84,20 +51,26 @@ document.querySelector('form').addEventListener('submit',async (event)=>{
     event.preventDefault()
     try
     {
-        const r = await axios.post('/send',{
-            message : event.target.message.value
-        },{
-            headers : {
-                Authorization : `Bearer ${localStorage.getItem('token')}`
-            }
-        })
+        send(event.target.message.value)
         event.target.reset()
-        arr.push(r)
-        ele(r.data)
     }
     catch(e)
     {
         console.log(e)
     }
 })
-setInterval(()=>{load()},3000)
+
+const socket = io('http://localhost:1000',{
+    auth : {
+        token : localStorage.getItem('token')
+    }
+})
+
+const send = (msg)=>{
+    socket.emit('chat-messages',msg)
+}
+
+socket.on('chat-messages',(msg)=>{
+    console.log(msg)
+    ele(msg)
+})

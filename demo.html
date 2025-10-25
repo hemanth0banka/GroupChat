@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+const io = new Server(server, {
+  cors: { origin: '*' },
+})
+
+io.use(async (socket, next) => {
+  try {
+    const token = socket.handshake.auth.token
+    if (!token) return next(new Error('Authorization token is missing'))
+
+    const decoded = jwt.verify(token, process.env.secretkey)
+    if (!decoded) return next(new Error('Invalid or expired token'))
+
+    const user = await users.findByPk(decoded.userId)
+    if (!user) return next(new Error('User not found'))
+
+    socket.user = user
+    next()
+  } catch (e) {q
+    console.error('Socket auth error:', e)
+    next(new Error('Authentication error'))
+  }
+})
+
+io.on('connection', (socket) => {
+  console.log(`User connected: ${socket.user.username}`)
+
+  socket.on('chat-message', async (msg) => {
+    io.emit('chat-message', {
+      message: msg,
+      userUserId: socket.user.userId
+    })
+  })
+
+  socket.on('disconnect', () => {
+    console.log(`User disconnected: ${socket.user.username}`)
+  })
+})
+
+
+__________
+
+
+const socket = io('http://localhost:1000', {
+  auth: { token: localStorage.getItem('token') },
+});
+
+const send = (msg) => {
+  socket.emit('chat-message', msg);
+};
+
+socket.on('chat-message', (msg) => {
+  console.log('Received:', msg);
+  ele(msg);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+<body>
+  <h3>WebSocket Chat</h3>
+  <input id="msg" placeholder="Type a message" />
+  <button onclick="send()">Send</button>
+  <ul id="chat"></ul>
+
+
+  <script>
+    const socket = new WebSocket("ws://localhost:1000");
+    const chat = document.getElementById("chat");
+
+
+    socket.onmessage = async (event) => {
+      const li = document.createElement("li");
+      // li.innerText = event.data; // It will return you Blog object
+      li.innerText =  await event.data; // Convert Blog to text
+      chat.appendChild(li);
+    };
+
+
+    function send() {
+      const text = document.getElementById("msg").value;
+      socket.send(text);
+    }
+  </script>
+</body>
+</html>
+
+
+let sockets = []
+const http = require('http')
+const { WebSocketServer } = require('ws')
+
+const server = http.createServer(app) // Create an HTTP server from the Express app
+const wss = new WebSocketServer({ server }) // Attach the WebSocket server to the HTTP server
+
+wss.on('connection',(w)=>{
+    sockets.push(w)
+    w.on('message',(m)=>{
+        // Broadcast the message to all connected clients
+        sockets.forEach(s => s.send(m.toString()));
+    })
+})
+
+app.use((req,res)=>{
+    res.status(404).send('Page Not Found ...')
+})
+sequelize.sync({alter : true}).then(()=>{
+    server.listen(port, () => { // Start the server that runs both Express and WebSockets
+        console.log(`Server listening at http://localhost:${port}`)
+    })
+}).catch(e=>console.log(e))

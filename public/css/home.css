@@ -79,7 +79,7 @@ form > button {
 }
 #group {
     align-self: flex-start;
-    background-color: rgb(244, 205, 255);
+    background-color: rgb(235, 161, 255);
     border : 1px solid lightgray;
     box-shadow: 0px 0px 5px lightgray;
     border-radius : 10px;

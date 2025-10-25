@@ -15,6 +15,10 @@ document.querySelector('form').addEventListener('submit',async (event)=>{
         {
             alert('no user found with the username')
         }
+        if(e.response.data == 401)
+        {
+            alert('invalid password')
+        }
         console.log(e)
     }
 })
